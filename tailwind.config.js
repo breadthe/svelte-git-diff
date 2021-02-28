@@ -149,7 +149,9 @@ module.exports = {
         extend: {},
     },
     variants: {
-        extend: {},
+        extend: {
+            textColor: ['group-hover']
+        },
         opacity: ['disabled'],
     },
     plugins: [],

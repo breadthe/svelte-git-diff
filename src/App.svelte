@@ -1,11 +1,10 @@
 <script>
-  //   import Prism from "prismjs";
-  //   import "prismjs/themes/prism.css";
-  //   import { prism } from "svelte-prism-action";
   import { fade } from "svelte/transition";
   import { dark } from "./store"; // dark mode
   //   import AppearanceToggler from "./AppearanceToggler.svelte";
-  import ExternalLinkIcon from "./ExternalLinkIcon.svelte";
+  import ExternalLinkIcon from "./icons/ExternalLinkIcon.svelte";
+  import GitHubIcon from "./icons/GitHubIcon.svelte";
+  import TwitterIcon from "./icons/TwitterIcon.svelte";
 
   export let title;
   export let subtitle;
@@ -61,9 +60,19 @@
 
 <!-- Note: "class:dark" is equivalent (and short for) "class:dark={dark}" or "class:dark={dark === true}" -->
 <main class="p-4 sm:p-8 space-y-8" class:dark>
-  <section class="">
-    <h1 class="">{title}</h1>
-    <h2 class="text-gray-600">{subtitle}</h2>
+  <section class="flex items-center justify-between">
+    <div>
+      <h1 class="">{title}</h1>
+      <h2 class="text-gray-600">{subtitle}</h2>
+    </div>
+    <div class="flex space-x-4">
+      <a href="https://github.com/breadthe/svelte-git-diff" class="group">
+        <GitHubIcon />
+      </a>
+      <a href="https://twitter.com/brbcoding/" class="group">
+        <TwitterIcon />
+      </a>
+    </div>
     <!-- <AppearanceToggler /> -->
   </section>
 
