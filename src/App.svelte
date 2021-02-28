@@ -24,28 +24,37 @@
     vendor.length > 0 && repo.length > 0 && from.length > 0 && to.length > 0;
 
   let data = {};
+  let error = "";
 
   let highlight = false;
 
-  async function clickMe() {
-    await fetch(url)
-      .then((response) => response.json())
+  function clickMe() {
+    data = {};
+    error = "";
+    fetch(url)
+      .then(async (response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error(
+            `GitHub returned ${response.status} - make sure the URL is valid`
+          );
+        }
+      })
       .then((responseData) => {
         data = responseData;
       })
-      .catch((e) => console.log(e));
+      .catch((e) => {
+        error = e.message;
+      });
   }
 
   async function highlightPatchAction(node, patch) {
-    // Prism.highlightAll();
     if (patch) {
-      //   node.innerHTML = patch;
-      //   node.innerHTML = Prism.highlight(patch, Prism.languages.diff);
       node.innerHTML = window.Prism.highlight(
         patch,
         window.Prism.languages.diff
       );
-      //   Prism.highlight();
     }
   }
 </script>
@@ -107,6 +116,15 @@
         <span>{@html highlightedUrl}</span>
         <ExternalLinkIcon />
       </a>
+    </section>
+  {/if}
+
+  {#if error.length}
+    <section
+      transition:fade={{ duration: 300 }}
+      class="bg-pink-100 text-pink-900 p-2 rounded"
+    >
+      {error}
     </section>
   {/if}
 
