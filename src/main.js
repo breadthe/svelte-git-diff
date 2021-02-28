@@ -5,7 +5,7 @@ const app = new App({
     target: document.body,
     props: {
         title: 'GitHub Diff',
-        subtitle: 'Get the diff between two GitHub branches, commits, or tags'
+        subtitle: 'Compare changes across GitHub branches, commits, or tags'
     }
 });
 

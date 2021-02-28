@@ -9,18 +9,22 @@
   export let title;
   export let subtitle;
 
-  let vendor = "laravel";
+  let user = "laravel";
   let repo = "laravel";
   let from = "8.x";
   let to = "master";
 
   let isFullUrl = false;
 
-  $: url = `https://api.github.com/repos/${vendor}/${repo}/compare/${from}...${to}`;
-  $: httpUrl = `https://github.com/${vendor}/${repo}/compare/${from}...${to}`;
-  $: highlightedUrl = `https://github.com/<span class="highlight">${vendor}</span>/<span class="highlight">${repo}</span>/compare/<span class="highlight">${from}</span>...<span class="highlight">${to}</span>`;
+  // "2 dots" (direct diff) instead of "3 dots" (diff from last common commit)
+  // https://github.com/ORG/REPO/compare/REF1..REF2
+  // compare across forks, add ORG2:
+  // https://github.com/ORG/REPO/compare/REF1...ORG2:REF2
+  $: url = `https://api.github.com/repos/${user}/${repo}/compare/${from}...${to}`;
+  $: httpUrl = `https://github.com/${user}/${repo}/compare/${from}...${to}`;
+  $: highlightedUrl = `https://github.com/<span class="highlight">${user}</span>/<span class="highlight">${repo}</span>/compare/<span class="highlight">${from}</span>...<span class="highlight">${to}</span>`;
   $: isFullUrl =
-    vendor.length > 0 && repo.length > 0 && from.length > 0 && to.length > 0;
+    user.length > 0 && repo.length > 0 && from.length > 0 && to.length > 0;
 
   let data = {};
   let error = "";
@@ -80,12 +84,12 @@
     class="flex flex-col justify-start sm:flex-row sm:items-end sm:space-x-4 sm:space-y-0 space-x-0 space-y-4"
   >
     <label class="flex flex-col">
-      <strong>Vendor</strong>
-      <input type="text" class="" placeholder="Vendor" bind:value={vendor} />
+      <strong>User</strong>
+      <input type="text" class="" placeholder="User" bind:value={user} />
     </label>
     <label class="flex flex-col">
-      <strong>Repository</strong>
-      <input type="text" class="" placeholder="Repository" bind:value={repo} />
+      <strong>Repo</strong>
+      <input type="text" class="" placeholder="Repo" bind:value={repo} />
     </label>
     <label class="flex flex-col">
       <strong>From <small>(branch, commit, tag)</small></strong>
