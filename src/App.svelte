@@ -99,8 +99,9 @@
     <!-- <AppearanceToggler /> -->
   </section>
 
-  <section
+  <form
     class="flex flex-col justify-start sm:flex-row sm:items-end sm:space-x-4 sm:space-y-0 space-x-0 space-y-4"
+    on:submit|preventDefault={getDiff}
   >
     <label class="flex flex-col">
       <strong>Org</strong>
@@ -132,15 +133,14 @@
     <label for="diff-butt">
       <button
         id="diff-butt"
-        type="button"
+        type="submit"
         class="bg-gradient-to-br from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 disabled:opacity-50 border px-4 py-1 rounded text-white"
-        on:click={() => getDiff()}
         disabled={!isFullUrl}
       >
         Diff
       </button>
     </label>
-  </section>
+  </form>
 
   {#if isFullUrl}
     <section transition:fade={{ duration: 300 }} class="overflow-auto">
@@ -170,10 +170,15 @@
       {#if data?.files?.length}
         <div class="bg-white space-y-8">
           <div class="bg-gray-200 p-2 rounded">
-            <label class="flex items-center space-x-1">
+            <label class="inline-flex items-center space-x-1">
               <input type="checkbox" bind:checked={highlight} />
               <span>highlight</span>
             </label>
+          </div>
+
+          <div>
+            <strong>{data.files.length}</strong>
+            files changed
           </div>
 
           {#each data.files as file}
