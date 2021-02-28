@@ -1,4 +1,5 @@
 <script>
+  import { tick } from "svelte";
   import { fade } from "svelte/transition";
   import { dark } from "./store"; // dark mode
   //   import AppearanceToggler from "./AppearanceToggler.svelte";
@@ -9,10 +10,7 @@
   export let title;
   export let subtitle;
 
-  let org = "laravel";
-  let repo = "laravel";
-  let from = "8.x";
-  let to = "master";
+  let org, repo, from, to; // Example: laravel laravel 8.x master
 
   let hash = "";
 
@@ -27,13 +25,28 @@
   $: highlightedUrl = `https://github.com/<span class="highlight">${org}</span>/<span class="highlight">${repo}</span>/compare/<span class="highlight">${from}</span>...<span class="highlight">${to}</span>`;
   $: isFullUrl =
     org?.length > 0 && repo?.length > 0 && from?.length > 0 && to?.length > 0;
+  $: placeholderUrl = `https://github.com/
+    <span class="highlight">${org?.length ? org : "&lt;org&gt;"}</span>/
+    <span class="highlight">${
+      repo?.length ? repo : "&lt;repo&gt;"
+    }</span>/compare/
+    <span class="highlight">${from?.length ? from : "&lt;to&gt;"}</span>...
+    <span class="highlight">${
+      to?.length ? to : "&lt;from&gt;"
+    }</span>`.replaceAll(/\s{2,5}/g, "");
 
   let data = {};
   let error = "";
 
   let highlight = false;
 
-  function getDiff() {
+  async function getDiff() {
+    await tick();
+
+    if (!isFullUrl) {
+      return;
+    }
+
     data = {};
     error = "";
     fetch(url)
@@ -69,6 +82,8 @@
     if (hashObj?.repo?.length) repo = hashObj.repo;
     if (hashObj?.from?.length) from = hashObj.from;
     if (hashObj?.to?.length) to = hashObj.to;
+
+    getDiff();
   }
 
   async function highlightPatchAction(node, patch) {
@@ -83,7 +98,7 @@
 
 <!-- Note: "class:dark" is equivalent (and short for) "class:dark={dark}" or "class:dark={dark === true}" -->
 <main class="p-4 sm:p-8 space-y-8" class:dark use:getUrlHashAction>
-  <section class="flex items-center justify-between">
+  <header class="flex items-center justify-between">
     <div>
       <h1 class="">{title}</h1>
       <h2 class="text-gray-600">{subtitle}</h2>
@@ -97,7 +112,7 @@
       </a>
     </div>
     <!-- <AppearanceToggler /> -->
-  </section>
+  </header>
 
   <form
     class="flex flex-col justify-start sm:flex-row sm:items-end sm:space-x-4 sm:space-y-0 space-x-0 space-y-4"
@@ -142,8 +157,8 @@
     </label>
   </form>
 
-  {#if isFullUrl}
-    <section transition:fade={{ duration: 300 }} class="overflow-auto">
+  <section transition:fade={{ duration: 300 }} class="overflow-auto">
+    {#if isFullUrl}
       <a
         href={httpUrl}
         class="inline-flex items-center space-x-2 underline font-mono"
@@ -151,8 +166,15 @@
         <span>{@html highlightedUrl}</span>
         <ExternalLinkIcon />
       </a>
-    </section>
-  {/if}
+    {:else}
+      <div class="flex flex-col">
+        <span class="font-mono">{@html placeholderUrl}</span>
+        <small>
+          Example: https://github.com/laravel/laravel/compare/8.x...master
+        </small>
+      </div>
+    {/if}
+  </section>
 
   {#if error.length}
     <section
