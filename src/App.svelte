@@ -3,6 +3,7 @@
   import { fade } from "svelte/transition";
   import { dark } from "./store"; // dark mode
   //   import AppearanceToggler from "./AppearanceToggler.svelte";
+  import Error from "./Error.svelte";
   import Header from "./Header.svelte";
   import ExternalLinkIcon from "./icons/ExternalLinkIcon.svelte";
 
@@ -45,32 +46,25 @@
 
   let highlight = false;
 
-  async function getDiff() {
-    await tick();
+  function getDiff() {
+    data = callApi();
+  }
 
-    if (!isFullUrl) {
-      return;
+  async function callApi() {
+    if (!isFullUrl) return;
+
+    const response = await fetch(url);
+    const json = await response.json();
+
+    if (response.ok) {
+      error = "";
+      setHash();
+
+      return json;
     }
 
-    data = {};
-    error = "";
-    await fetch(url)
-      .then(async (response) => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          throw new Error(
-            `GitHub returned ${response.status} - make sure the URL is valid`
-          );
-        }
-      })
-      .then((responseData) => {
-        data = responseData;
-        setHash();
-      })
-      .catch((e) => {
-        error = e.message;
-      });
+    error = `GitHub returned ${response.status} - make sure the URL is valid`;
+    return;
   }
 
   function setHash() {
@@ -78,7 +72,7 @@
   }
 
   // Example: http://localhost:5000/#org=laravel&repo=laravel&from=8.x&to=master
-  function getUrlHashAction(node, params) {
+  async function getUrlHashAction(node, params) {
     hash = window.location.hash.substr(1); // org=laravel&repo=laravel&from=8.x&to=master
     const hashObj = Object.fromEntries(
       hash.split("&").map((i) => i.split("="))
@@ -87,6 +81,8 @@
     if (hashObj?.repo?.length) repo = hashObj.repo;
     if (hashObj?.from?.length) from = hashObj.from;
     if (hashObj?.to?.length) to = hashObj.to;
+
+    await tick();
 
     getDiff();
   }
@@ -174,18 +170,11 @@
     {/if}
   </section>
 
-  {#if error.length}
-    <section
-      transition:fade={{ duration: 300 }}
-      class="bg-pink-100 text-pink-900 p-2 rounded"
-    >
-      {error}
-    </section>
-  {/if}
+  <Error {error} />
 
   <section>
     {#await data}
-      WAIT
+      loading...
     {:then data}
       {#if data?.files?.length}
         <div class="bg-white space-y-8">
@@ -238,6 +227,8 @@
           {/each}
         </div>
       {/if}
+    {:catch error}
+      <Error {error} />
     {/await}
   </section>
 </main>
