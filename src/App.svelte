@@ -9,10 +9,12 @@
   export let title;
   export let subtitle;
 
-  let user = "laravel";
+  let org = "laravel";
   let repo = "laravel";
   let from = "8.x";
   let to = "master";
+
+  let hash = "";
 
   let isFullUrl = false;
 
@@ -20,18 +22,18 @@
   // https://github.com/ORG/REPO/compare/REF1..REF2
   // compare across forks, add ORG2:
   // https://github.com/ORG/REPO/compare/REF1...ORG2:REF2
-  $: url = `https://api.github.com/repos/${user}/${repo}/compare/${from}...${to}`;
-  $: httpUrl = `https://github.com/${user}/${repo}/compare/${from}...${to}`;
-  $: highlightedUrl = `https://github.com/<span class="highlight">${user}</span>/<span class="highlight">${repo}</span>/compare/<span class="highlight">${from}</span>...<span class="highlight">${to}</span>`;
+  $: url = `https://api.github.com/repos/${org}/${repo}/compare/${from}...${to}`;
+  $: httpUrl = `https://github.com/${org}/${repo}/compare/${from}...${to}`;
+  $: highlightedUrl = `https://github.com/<span class="highlight">${org}</span>/<span class="highlight">${repo}</span>/compare/<span class="highlight">${from}</span>...<span class="highlight">${to}</span>`;
   $: isFullUrl =
-    user.length > 0 && repo.length > 0 && from.length > 0 && to.length > 0;
+    org?.length > 0 && repo?.length > 0 && from?.length > 0 && to?.length > 0;
 
   let data = {};
   let error = "";
 
   let highlight = false;
 
-  function clickMe() {
+  function getDiff() {
     data = {};
     error = "";
     fetch(url)
@@ -46,15 +48,32 @@
       })
       .then((responseData) => {
         data = responseData;
+        setHash();
       })
       .catch((e) => {
         error = e.message;
       });
   }
 
+  function setHash() {
+    window.location.hash = `org=${org}&repo=${repo}&from=${from}&to=${to}`;
+  }
+
+  // Example: http://localhost:5000/#org=laravel&repo=laravel&from=8.x&to=master
+  function getUrlHashAction(node, params) {
+    hash = window.location.hash.substr(1); // org=laravel&repo=laravel&from=8.x&to=master
+    const hashObj = Object.fromEntries(
+      hash.split("&").map((i) => i.split("="))
+    ); // {org: "laravel", repo: "laravel", from: "7.x", to: "8.x"}
+    if (hashObj?.org?.length) org = hashObj.org;
+    if (hashObj?.repo?.length) repo = hashObj.repo;
+    if (hashObj?.from?.length) from = hashObj.from;
+    if (hashObj?.to?.length) to = hashObj.to;
+  }
+
   async function highlightPatchAction(node, patch) {
     if (patch) {
-      node.innerHTML = window.Prism.highlight(
+      node.innerHTML = await window.Prism.highlight(
         patch,
         window.Prism.languages.diff
       );
@@ -63,7 +82,7 @@
 </script>
 
 <!-- Note: "class:dark" is equivalent (and short for) "class:dark={dark}" or "class:dark={dark === true}" -->
-<main class="p-4 sm:p-8 space-y-8" class:dark>
+<main class="p-4 sm:p-8 space-y-8" class:dark use:getUrlHashAction>
   <section class="flex items-center justify-between">
     <div>
       <h1 class="">{title}</h1>
@@ -84,8 +103,8 @@
     class="flex flex-col justify-start sm:flex-row sm:items-end sm:space-x-4 sm:space-y-0 space-x-0 space-y-4"
   >
     <label class="flex flex-col">
-      <strong>User</strong>
-      <input type="text" class="" placeholder="User" bind:value={user} />
+      <strong>Org</strong>
+      <input type="text" class="" placeholder="Org" bind:value={org} />
     </label>
     <label class="flex flex-col">
       <strong>Repo</strong>
@@ -115,7 +134,7 @@
         id="diff-butt"
         type="button"
         class="bg-gradient-to-br from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 disabled:opacity-50 border px-4 py-1 rounded text-white"
-        on:click={() => clickMe()}
+        on:click={() => getDiff()}
         disabled={!isFullUrl}
       >
         Diff
@@ -125,7 +144,10 @@
 
   {#if isFullUrl}
     <section transition:fade={{ duration: 300 }} class="overflow-auto">
-      <a href={httpUrl} class="flex items-center space-x-2 underline font-mono">
+      <a
+        href={httpUrl}
+        class="inline-flex items-center space-x-2 underline font-mono"
+      >
         <span>{@html highlightedUrl}</span>
         <ExternalLinkIcon />
       </a>
@@ -210,6 +232,11 @@
 
   a {
     color: blue;
+  }
+
+  :not(pre) > code[class*="language-"],
+  pre[class*="language-"] {
+    @apply bg-gray-200;
   }
 
   .highlight {
