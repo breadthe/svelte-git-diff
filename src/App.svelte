@@ -10,6 +10,12 @@
   export let subtitle;
 
   let org, repo, from, to; // Example: laravel laravel 8.x master
+  const example = {
+    org: "laravel",
+    repo: "laravel",
+    from: "8.x",
+    to: "master",
+  };
 
   let hash = "";
 
@@ -48,7 +54,7 @@
 
     data = {};
     error = "";
-    fetch(url)
+    await fetch(url)
       .then(async (response) => {
         if (response.ok) {
           return response.json();
@@ -92,6 +98,10 @@
         window.Prism.languages.diff
       );
     }
+  }
+
+  function populateWithExample() {
+    ({ org, repo, from, to } = { ...example });
   }
 </script>
 
@@ -155,7 +165,10 @@
       <div class="flex flex-col">
         <span class="font-mono">{@html placeholderUrl}</span>
         <small>
-          Example: https://github.com/laravel/laravel/compare/8.x...master
+          Example:
+          <a href="#" on:click|preventDefault={populateWithExample}>
+            {`https://github.com/${example.org}/${example.repo}/compare/${example.from}...${example.to}`}
+          </a>
         </small>
       </div>
     {/if}
