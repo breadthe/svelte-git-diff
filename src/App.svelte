@@ -4,6 +4,7 @@
   import { dark } from "./store"; // dark mode
   //   import AppearanceToggler from "./AppearanceToggler.svelte";
   import Error from "./Error.svelte";
+  import File from "./File.svelte";
   import Header from "./Header.svelte";
   import ExternalLinkIcon from "./icons/ExternalLinkIcon.svelte";
 
@@ -85,15 +86,6 @@
     await tick();
 
     getDiff();
-  }
-
-  async function highlightPatchAction(node, patch) {
-    if (patch) {
-      node.innerHTML = await window.Prism.highlight(
-        patch,
-        window.Prism.languages.diff
-      );
-    }
   }
 
   function populateWithExample() {
@@ -191,39 +183,7 @@
           </div>
 
           {#each data.files as file}
-            <div>
-              <div
-                class="flex flex-col justify-between sm:flex-row sm:items-center"
-              >
-                <a
-                  href={file.blob_url}
-                  class="flex items-center space-x-2 font-bold text-blue-600 underline"
-                >
-                  <span>
-                    {file.filename}
-                  </span>
-                  <ExternalLinkIcon />
-                </a>
-                <span>
-                  <strong>{file.changes}</strong> changes:
-                  <span class="text-green-600"
-                    ><strong>{file.additions}</strong>
-                    additions</span
-                  >
-                  +
-                  <span class="text-red-600"
-                    ><strong>{file.deletions}</strong> deletions</span
-                  >
-                </span>
-              </div>
-              <div>
-                <pre
-                  class="language-diff"
-                  class:diff-highlight={highlight}>
-                  <code use:highlightPatchAction={file.patch}></code>
-              </pre>
-              </div>
-            </div>
+            <File {file} {highlight} />
           {/each}
         </div>
       {/if}
