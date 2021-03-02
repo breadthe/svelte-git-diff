@@ -3,8 +3,10 @@
 
   export let file;
   export let highlight;
+  export let isCollapsedAll;
 
   let isCollapsed = false;
+  $: isCollapsed = isCollapsedAll;
 
   async function highlightPatchAction(node, patch) {
     if (patch) {

@@ -19,9 +19,12 @@
     to: "master",
   };
 
-  let hash = "";
-
-  let isFullUrl = false;
+  let hash = ""; // Example: #org=laravel&repo=laravel&from=8.x&to=master
+  let isFullUrl = false; // is the GitHub URL complete (has all the params)?
+  let data = {}; // API data
+  let error = ""; // fetch error
+  let isCollapsedAll = false; // toggle collapsing all files
+  let highlight = false; // highlight the parameters of the GitHub URL
 
   // "2 dots" (direct diff) instead of "3 dots" (diff from last common commit)
   // https://github.com/ORG/REPO/compare/REF1..REF2
@@ -41,12 +44,6 @@
     <span class="highlight">${
       to?.length ? to : "&lt;from&gt;"
     }</span>`.replaceAll(/\s{2,5}/g, "");
-
-  let data = {};
-  let error = "";
-
-  let collapseAll = false; // toggle collapsing all files
-  let highlight = false;
 
   function getDiff() {
     data = callApi();
@@ -178,13 +175,23 @@
             </label>
           </div>
 
-          <div>
-            <strong>{data.files.length}</strong>
-            files changed
+          <div class="space-x-2">
+            <span>
+              <strong>{data.files.length}</strong>
+              files changed
+            </span>
+
+            <a
+              href="#"
+              on:click|preventDefault={() => (isCollapsedAll = !isCollapsedAll)}
+              class="text-gray-600 hover:text-black text-xs font-bold"
+            >
+              {isCollapsedAll ? "expand" : "collapse"} all
+            </a>
           </div>
 
           {#each data.files as file}
-            <File {file} {highlight} />
+            <File {file} {highlight} {isCollapsedAll} />
           {/each}
         </div>
       {/if}
