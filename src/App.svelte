@@ -45,6 +45,7 @@
   let data = {};
   let error = "";
 
+  let collapseAll = false; // toggle collapsing all files
   let highlight = false;
 
   function getDiff() {
@@ -171,7 +172,7 @@
       {#if data?.files?.length}
         <div class="bg-white space-y-8">
           <div class="bg-gray-200 p-2 rounded">
-            <label class="inline-flex items-center space-x-1">
+            <label class="inline-flex items-center space-x-2">
               <input type="checkbox" bind:checked={highlight} />
               <span>highlight</span>
             </label>
@@ -206,22 +207,8 @@
     @apply text-xs text-gray-600;
   }
 
-  a {
-    color: blue;
-  }
-
   :not(pre) > code[class*="language-"],
   pre[class*="language-"] {
     @apply bg-gray-200;
-  }
-
-  .highlight {
-    border-radius: 1em 0 1em 0;
-    background-image: linear-gradient(
-      -100deg,
-      rgba(255, 224, 0, 0.3),
-      rgba(255, 224, 0, 0.7) 95%,
-      rgba(255, 224, 0, 0.1)
-    );
   }
 </style>
