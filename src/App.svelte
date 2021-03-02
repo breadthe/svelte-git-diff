@@ -11,15 +11,15 @@
   export let title;
   export let subtitle;
 
-  let org, repo, from, to; // Example: laravel laravel 8.x master
+  let org, repo, base, head; // Example: laravel laravel 8.x master
   const example = {
     org: "laravel",
     repo: "laravel",
-    from: "8.x",
-    to: "master",
+    base: "8.x",
+    head: "master",
   };
 
-  let hash = ""; // Example: #org=laravel&repo=laravel&from=8.x&to=master
+  let hash = ""; // Example: #org=laravel&repo=laravel&base=8.x&head=master
   let isFullUrl = false; // is the GitHub URL complete (has all the params)?
   let data = {}; // API data
   let error = ""; // fetch error
@@ -30,19 +30,19 @@
   // https://github.com/ORG/REPO/compare/REF1..REF2
   // compare across forks, add ORG2:
   // https://github.com/ORG/REPO/compare/REF1...ORG2:REF2
-  $: url = `https://api.github.com/repos/${org}/${repo}/compare/${from}...${to}`;
-  $: httpUrl = `https://github.com/${org}/${repo}/compare/${from}...${to}`;
-  $: highlightedUrl = `https://github.com/<span class="highlight">${org}</span>/<span class="highlight">${repo}</span>/compare/<span class="highlight">${from}</span>...<span class="highlight">${to}</span>`;
+  $: url = `https://api.github.com/repos/${org}/${repo}/compare/${base}...${head}`;
+  $: httpUrl = `https://github.com/${org}/${repo}/compare/${base}...${head}`;
+  $: highlightedUrl = `https://github.com/<span class="highlight">${org}</span>/<span class="highlight">${repo}</span>/compare/<span class="highlight">${base}</span>...<span class="highlight">${head}</span>`;
   $: isFullUrl =
-    org?.length > 0 && repo?.length > 0 && from?.length > 0 && to?.length > 0;
+    org?.length > 0 && repo?.length > 0 && base?.length > 0 && head?.length > 0;
   $: placeholderUrl = `https://github.com/
     <span class="highlight">${org?.length ? org : "&lt;org&gt;"}</span>/
     <span class="highlight">${
       repo?.length ? repo : "&lt;repo&gt;"
     }</span>/compare/
-    <span class="highlight">${from?.length ? from : "&lt;to&gt;"}</span>...
+    <span class="highlight">${base?.length ? base : "&lt;base&gt;"}</span>...
     <span class="highlight">${
-      to?.length ? to : "&lt;from&gt;"
+      head?.length ? head : "&lt;head&gt;"
     }</span>`.replaceAll(/\s{2,5}/g, "");
 
   function getDiff() {
@@ -67,19 +67,19 @@
   }
 
   function setHash() {
-    window.location.hash = `org=${org}&repo=${repo}&from=${from}&to=${to}`;
+    window.location.hash = `org=${org}&repo=${repo}&base=${base}&head=${head}`;
   }
 
-  // Example: http://localhost:5000/#org=laravel&repo=laravel&from=8.x&to=master
+  // Example: http://localhost:5000/#org=laravel&repo=laravel&base=8.x&head=master
   async function getUrlHashAction(node, params) {
-    hash = window.location.hash.substr(1); // org=laravel&repo=laravel&from=8.x&to=master
+    hash = window.location.hash.substr(1); // org=laravel&repo=laravel&base=8.x&head=master
     const hashObj = Object.fromEntries(
       hash.split("&").map((i) => i.split("="))
-    ); // {org: "laravel", repo: "laravel", from: "7.x", to: "8.x"}
+    ); // {org: "laravel", repo: "laravel", base: "8.x", head: "master"}
     if (hashObj?.org?.length) org = hashObj.org;
     if (hashObj?.repo?.length) repo = hashObj.repo;
-    if (hashObj?.from?.length) from = hashObj.from;
-    if (hashObj?.to?.length) to = hashObj.to;
+    if (hashObj?.base?.length) base = hashObj.base;
+    if (hashObj?.head?.length) head = hashObj.head;
 
     await tick();
 
@@ -87,7 +87,7 @@
   }
 
   function populateWithExample() {
-    ({ org, repo, from, to } = { ...example });
+    ({ org, repo, base, head } = { ...example });
   }
 </script>
 
@@ -108,21 +108,19 @@
       <input type="text" class="" placeholder="Repo" bind:value={repo} />
     </label>
     <label class="flex flex-col">
-      <strong>From <small>(branch, commit, tag)</small></strong>
+      <strong>Base <small>(branch, commit, tag)</small></strong>
       <input
         type="text"
-        class=""
-        placeholder="From (branch, commit, tag)"
-        bind:value={from}
+        placeholder="Base (branch, commit, tag)"
+        bind:value={base}
       />
     </label>
     <label class="flex flex-col">
-      <strong>To <small>(branch, commit, tag)</small></strong>
+      <strong>Head <small>(branch, commit, tag)</small></strong>
       <input
         type="text"
-        class=""
-        placeholder="To (branch, commit, tag)"
-        bind:value={to}
+        placeholder="Head (branch, commit, tag)"
+        bind:value={head}
       />
     </label>
 
@@ -153,7 +151,7 @@
         <small>
           Example:
           <a href="#" on:click|preventDefault={populateWithExample}>
-            {`https://github.com/${example.org}/${example.repo}/compare/${example.from}...${example.to}`}
+            {`https://github.com/${example.org}/${example.repo}/compare/${example.base}...${example.head}`}
           </a>
         </small>
       </div>
