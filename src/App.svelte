@@ -95,19 +95,16 @@
 <main class="p-4 sm:p-8 space-y-8" class:dark use:getUrlHashAction>
   <Header {title} {subtitle} />
 
-  <form
-    class="flex flex-col justify-start sm:flex-row sm:items-end sm:space-x-4 sm:space-y-0 space-x-0 space-y-4"
-    on:submit|preventDefault={getDiff}
-  >
-    <label class="flex flex-col">
+  <form class="flex flex-wrap -m-2" on:submit|preventDefault={getDiff}>
+    <label class="flex flex-col m-2">
       <strong>Org</strong>
       <input type="text" class="" placeholder="Org" bind:value={org} />
     </label>
-    <label class="flex flex-col">
+    <label class="flex flex-col m-2">
       <strong>Repo</strong>
       <input type="text" class="" placeholder="Repo" bind:value={repo} />
     </label>
-    <label class="flex flex-col">
+    <label class="flex flex-col m-2">
       <strong>Base <small>(branch, commit, tag)</small></strong>
       <input
         type="text"
@@ -115,7 +112,7 @@
         bind:value={base}
       />
     </label>
-    <label class="flex flex-col">
+    <label class="flex flex-col m-2">
       <strong>Head <small>(branch, commit, tag)</small></strong>
       <input
         type="text"
@@ -124,7 +121,8 @@
       />
     </label>
 
-    <label for="diff-butt">
+    <label class="flex flex-col m-2" for="diff-butt">
+      <span>&nbsp;</span>
       <button
         id="diff-butt"
         type="submit"
