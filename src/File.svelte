@@ -1,4 +1,5 @@
 <script>
+  import { slide } from "svelte/transition";
   import ExternalLinkIcon from "./icons/ExternalLinkIcon.svelte";
 
   export let file;
@@ -54,7 +55,7 @@
   </div>
 
   {#if !isCollapsed}
-    <div>
+    <div transition:slide={{ duration: 100 }}>
       <pre
         class="language-diff"
         class:diff-highlight={highlight}>
