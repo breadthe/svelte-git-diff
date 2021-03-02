@@ -63,4 +63,8 @@
 </div>
 
 <style>
+  :not(pre) > code[class*="language-"],
+  pre[class*="language-"] {
+    @apply bg-gray-200;
+  }
 </style>

@@ -206,9 +206,4 @@
   small {
     @apply text-xs text-gray-600;
   }
-
-  :not(pre) > code[class*="language-"],
-  pre[class*="language-"] {
-    @apply bg-gray-200;
-  }
 </style>

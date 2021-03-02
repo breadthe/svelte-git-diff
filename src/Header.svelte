@@ -9,7 +9,7 @@
 <section class="flex items-center justify-between">
   <div>
     <h1>
-      <a href="/" class="flex items-center space-x-2">
+      <a href="/" class="flex items-center space-x-2 text-black">
         <svg
           width="32"
           height="32"
